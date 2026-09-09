@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BoardBlaze</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #111827, #1e3a8a);
+    color: white;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 25px;
+}
+
+.header {
+    text-align: center;
+    padding: 20px;
+}
+
+.logo {
+    font-size: 42px;
+    font-weight: 900;
+}
+
+.logo span {
+    color: #facc15;
+}
+
+.tagline {
+    color: #dbeafe;
+    margin-top: 5px;
+}
+
+.card {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 25px;
+    margin-top: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.start-btn {
+    background: #facc15;
+    color: #111827;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin: 12px 0;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.option:hover {
+    background: rgba(255,255,255,0.22);
+}
+
+.correct {
+    background: #166534 !important;
+}
+
+.wrong {
+    background: #991b1b !important;
+}
+
+.disabled {
+    pointer-events: none;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.badge {
+    background: rgba(255,255,255,0.15);
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.progress {
+    height: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0 25px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #facc15;
+    transition: width 0.3s;
+}
+
+.question {
+    font-size: 22px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.chapter {
+    color: #facc15;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.feedback {
+    margin-top: 15px;
+    padding: 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.10);
+    display: none;
+}
+
+.next-btn {
+    background: #60a5fa;
+    color: #111827;
+    width: 100%;
+    margin-top: 15px;
+    display: none;
+}
+
+.restart-btn {
+    background: #facc15;
+    color: #111827;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.score {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+.small {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.explanation {
+    margin-top: 10px;
+    color: #dbeafe;
+}
+
+@media(max-width:600px) {
+    .container {
+        padding: 12px;
+    }
+
+    .logo {
+        font-size: 34px;
+    }
+
+    .question {
+        font-size: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">🔥 Board<span>Blaze</span></div>
+        <div class="tagline">
+            Class 10 Science • Extreme Board Challenge
+        </div>
+    </div>
+
+    <!-- HOME -->
+    <div id="home" class="card">
+
+        <h2>Class 10 Science — Extreme Mode</h2>
+
+        <p>
+            Test yourself with difficult, application-based and HOTS-style
+            Science MCQs.
+        </p>
+
+        <ul>
+            <li>60 questions per attempt</li>
+            <li>70-question master bank</li>
+            <li>New question set every attempt</li>
+            <li>Options are shuffled too</li>
+            <li>Instant answer explanations</li>
+            <li>Your previous set is remembered</li>
+        </ul>
+
+        <p class="small">
+            This is a practice challenge, not a prediction of the exact
+            questions that will appear in the CBSE board examination.
+        </p>
+
+        <button class="start-btn" onclick="startQuiz()">
+            START QUIZ
+        </button>
+
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quizScreen" class="card hidden">
+
+        <div class="topbar">
+            <div class="badge" id="questionNumber"></div>
+            <div class="badge" id="scoreDisplay">Score: 0</div>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="chapter" id="chapter"></div>
+
+        <div class="question" id="question"></div>
+
+        <div id="options"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+            NEXT QUESTION →
+        </button>
+
+    </div>
+
+    <!-- RESULT -->
+    <div id="resultScreen" class="card hidden">
+
+        <div class="score" id="finalScore"></div>
+
+        <p id="resultMessage" style="text-align:center;"></p>
+
+        <div class="explanation" id="resultDetails"></div>
+
+        <button class="restart-btn" onclick="startQuiz()">
+            🔥 PLAY A NEW 60-QUESTION QUIZ
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   BOARD BLAZE
+   70 QUESTION MASTER BANK
+   60 QUESTIONS ARE RANDOMLY SELECTED EACH ATTEMPT
+   ============================================================ */
+
+const questionBank = [
+
+/* ================= CHEMISTRY ================= */
+
+{
+chapter:"Chemical Reactions and Equations",
+q:"A student places an iron nail in copper sulphate solution. After some time, the solution changes from blue to green. Which conclusion is most accurate?",
+o:[
+"Cu is more reactive than Fe",
+"Fe displaces Cu from CuSO₄",
+"Fe and Cu form an alloy in solution",
+"CuSO₄ decomposes because of light"
+],
+a:1,
+e:"Iron is more reactive than copper, so Fe displaces Cu from CuSO₄, forming FeSO₄, which is green."
+},
+
+{
+chapter:"Chemical Reactions and Equations",
+q:"In the reaction CuO + H₂ → Cu + H₂O, which substance is oxidised?",
+o:[
+"CuO",
+"H₂",
+"Cu",
+"H₂O"
+],
+a:1,
+e:"Hydrogen gains oxygen to form water, so hydrogen is oxidised."
+},
+
+{
+chapter:"Chemical Reactions and Equations",
+q:"A compound X reacts with dilute HCl and produces a gas that turns limewater milky. X is most likely:",
+o:[
+"NaCl",
+"Na₂CO₃",
+"NaOH",
+"CuSO₄"
+],
+a:1,
+e:"Carbonates react with dilute acids to release CO₂, which turns limewater milky."
+},
+
+{
+chapter:"Chemical Reactions and Equations",
+q:"A reaction has the form A + B → C + heat. Which statement is necessarily true?",
+o:[
+"It is endothermic",
+"It is exothermic",
+"It must be a displacement reaction",
+"It must involve oxygen"
+],
+a:1,
+e:"Heat is released by the reaction, so it is exothermic."
+},
+
+{
+chapter:"Chemical Reactions and Equations",
+q:"Which observation gives the strongest evidence that a chemical reaction has occurred?",
+o:[
+"Water evaporates",
+"A substance changes position",
+"An insoluble precipitate forms",
+"A solid is crushed"
+],
+a:2,
+e:"Formation of a precipitate is a strong indication of formation of a new substance."
+},
+
+{
+chapter:"Acids, Bases and Salts",
+q:"Two solutions have pH 2 and pH 5. Compared with the pH 5 solution, the hydrogen-ion concentration of the pH 2 solution is:",
+o:[
+"3 times greater",
+"100 times greater",
+"1000 times greater",
+"3000 times greater"
+],
+a:2,
+e:"A decrease of 3 pH units means a 10³ = 1000-fold increase in H⁺ concentration."
+},
+
+{
+chapter:"Acids, Bases and Salts",
+q:"A farmer finds that the soil is highly acidic. Which treatment is most appropriate?",
+o:[
+"Add quicklime/slaked lime",
+"Add common salt",
+"Add vinegar",
+"Add ammonium chloride"
+],
+a:0,
+e:"Lime is basic and is used to neutralise acidic soil."
+},
+
+{
+chapter:"Acids, Bases and Salts",
+q:"When sodium hydrogen carbonate is heated strongly, the gas evolved is:",
+o:[
+"O₂",
+"H₂",
+"CO₂",
+"Cl₂"
+],
+a:2,
+e:"2NaHCO₃ → Na₂CO₃ + H₂O + CO₂."
+},
+
+{
+chapter:"Acids, Bases and Salts",
+q:"Why does dry HCl gas not change the colour of dry blue litmus paper?",
+o:[
+"HCl is not acidic",
+"Dry HCl cannot produce H⁺ ions without water",
+"Litmus reacts only with bases",
+"HCl is neutral in gaseous form"
+],
+a:1,
+e:"Acidic behaviour requires ionisation in water to produce H⁺/H₃O⁺ ions."
+},
+
+{
+chapter:"Acids, Bases and Salts",
+q:"A solution turns red litmus blue and phenolphthalein pink. Which conclusion is strongest?",
+o:[
+"The solution is acidic",
+"The solution is basic",
+"The solution is neutral",
+"The solution must be a salt solution"
+],
+a:1,
+e:"Both indicator changes are characteristic of a basic solution."
+},
+
+{
+chapter:"Metals and Non-metals",
+q:"Sodium is stored under kerosene mainly because it:",
+o:[
+"has a low melting point",
+"reacts vigorously with air and moisture",
+"is heavier than kerosene",
+"conducts electricity"
+],
+a:1,
+e:"Sodium reacts vigorously with oxygen and water, so kerosene prevents contact."
+},
+
+{
+chapter:"Metals and Non-metals",
+q:"Aluminium is widely used despite being reactive because:",
+o:[
+"It never reacts with oxygen",
+"It forms a protective oxide layer",
+"It is a non-metal",
+"It cannot conduct electricity"
+],
+a:1,
+e:"Aluminium forms a thin, stable Al₂O₃ layer that protects the metal from further corrosion."
+},
+
+{
+chapter:"Metals and Non-metals",
+q:"Which pair would most likely form an ionic compound?",
+o:[
+"Na and Cl",
+"C and H",
+"Cl and Cl",
+"O and O"
+],
+a:0,
+e:"Sodium transfers an electron to chlorine, forming Na⁺ and Cl⁻ ions."
+},
+
+{
+chapter:"Metals and Non-metals",
+q:"An ionic compound generally has a high melting point because:",
+o:[
+"Its molecules are very large",
+"Its ions are held by strong electrostatic forces",
+"It contains only covalent bonds",
+"It always contains carbon"
+],
+a:1,
+e:"Strong electrostatic attraction between oppositely charged ions requires considerable energy to overcome."
+},
+
+/* ================= CARBON ================= */
+
+{
+chapter:"Carbon and Its Compounds",
+q:"Carbon forms a very large number of compounds mainly because of:",
+o:[
+"Its radioactivity",
+"Catenation and tetravalency",
+"Its metallic nature",
+"Its inability to form bonds"
+],
+a:1,
+e:"Carbon can bond with itself and form four covalent bonds."
+},
+
+{
+chapter:"Carbon and Its Compounds",
+q:"Which pair represents structural isomers?",
+o:[
+"CH₄ and C₂H₆",
+"C₂H₆ and C₂H₄",
+"C₄H₁₀ structures with different carbon arrangements",
+"CO₂ and CH₄"
+],
+a:2,
+e:"Structural isomers have the same molecular formula but different structural arrangements."
+},
+
+{
+chapter:"Carbon and Its Compounds",
+q:"Ethanol reacts with concentrated H₂SO₄ at about 443 K to form:",
+o:[
+"Ethene",
+"Ethane",
+"Ethanoic acid",
+"Methane"
+],
+a:0,
+e:"Concentrated sulphuric acid removes water from ethanol, producing ethene."
+},
+
+{
+chapter:"Carbon and Its Compounds",
+q:"Which functional group is present in ethanoic acid?",
+o:[
+"–OH only",
+"–CHO",
+"–COOH",
+"–CO–"
+],
+a:2,
+e:"Ethanoic acid contains the carboxylic acid functional group –COOH."
+},
+
+{
+chapter:"Carbon and Its Compounds",
+q:"Soap becomes less effective in hard water mainly because it:",
+o:[
+"evaporates rapidly",
+"forms insoluble salts with Ca²⁺ and Mg²⁺",
+"turns into an acid",
+"loses all carbon atoms"
+],
+a:1,
+e:"Calcium and magnesium ions form insoluble scum with soap."
+},
+
+{
+chapter:"Carbon and Its Compounds",
+q:"Which conversion represents oxidation of ethanol?",
+o:[
+"Ethanol → ethene",
+"Ethanol → ethanoic acid",
+"Ethanol → methane",
+"Ethanol → ethane"
+],
+a:1,
+e:"Ethanol can be oxidised to ethanoic acid."
+},
+
+/* ================= PERIODIC ================= */
+
+{
+chapter:"Periodic Classification",
+q:"An element has electronic configuration 2,8,7. Its most likely chemical behaviour is to:",
+o:[
+"lose seven electrons",
+"gain one electron",
+"lose one electron",
+"share no electrons"
+],
+a:1,
+e:"Seven valence electrons means gaining one electron completes the octet."
+},
+
+{
+chapter:"Periodic Classification",
+q:"Across a period from left to right, atomic size generally:",
+o:[
+"increases",
+"decreases",
+"remains exactly constant",
+"first becomes zero"
+],
+a:1,
+e:"Effective nuclear charge increases across a period, generally reducing atomic radius."
+},
+
+{
+chapter:"Periodic Classification",
+q:"Elements in the same group generally have similar chemical properties because they have similar:",
+o:[
+"number of shells",
+"atomic masses",
+"valence-electron configuration",
+"number of neutrons"
+],
+a:2,
+e:"Similar valence-electron configurations lead to similar chemical behaviour."
+},
+
+/* ================= LIFE PROCESSES ================= */
+
+{
+chapter:"Life Processes",
+q:"A person has blocked bile flow. Which process would be most directly affected?",
+o:[
+"Digestion of fats",
+"Digestion of starch by saliva",
+"Absorption of oxygen",
+"Filtration of blood"
+],
+a:0,
+e:"Bile emulsifies fats and helps create an alkaline medium for their digestion."
+},
+
+{
+chapter:"Life Processes",
+q:"The large surface area of alveoli is important because it:",
+o:[
+"reduces blood pressure",
+"maximises gaseous exchange",
+"produces digestive enzymes",
+"prevents diffusion"
+],
+a:1,
+e:"Large surface area and thin walls allow efficient diffusion of O₂ and CO₂."
+},
+
+{
+chapter:"Life Processes",
+q:"Why is the wall of the left ventricle thicker than that of the right ventricle?",
+o:[
+"It receives deoxygenated blood",
+"It pumps blood to the entire body",
+"It pumps blood only to the lungs",
+"It contains no valves"
+],
+a:1,
+e:"The left ventricle must generate greater pressure to pump blood throughout the body."
+},
+
+{
+chapter:"Life Processes",
+q:"If the glomerular filtration rate decreases significantly, the immediate consequence would be:",
+o:[
+"more filtration of blood",
+"less formation of filtrate",
+"more oxygen entering alveoli",
+"more bile production"
+],
+a:1,
+e:"Reduced filtration at the glomerulus means less filtrate is initially formed."
+},
+
+{
+chapter:"Life Processes",
+q:"Aerobic respiration generally releases more energy than anaerobic respiration because:",
+o:[
+"glucose is completely oxidised",
+"oxygen prevents ATP formation",
+"glucose is not broken down",
+"carbon dioxide is never produced"
+],
+a:0,
+e:"Aerobic respiration involves more complete oxidation of glucose and releases more energy."
+},
+
+{
+chapter:"Life Processes",
+q:"A person consumes excess water. Which kidney response helps maintain water balance?",
+o:[
+"Always producing concentrated urine",
+"Adjusting water reabsorption",
+"Stopping filtration permanently",
+"Stopping blood circulation"
+],
+a:1,
+e:"Kidneys regulate water balance by adjusting the amount of water reabsorbed."
+},
+
+/* ================= CONTROL ================= */
+
+{
+chapter:"Control and Coordination",
+q:"A shoot bends towards light because auxin:",
+o:[
+"accumulates on the illuminated side and stops growth",
+"accumulates on the shaded side and promotes elongation",
+"is destroyed equally on both sides",
+"moves only into roots"
+],
+a:1,
+e:"Auxin promotes cell elongation in shoots, causing greater growth on the shaded side."
+},
+
+{
+chapter:"Control and Coordination",
+q:"Which part of the brain is mainly responsible for maintaining posture and balance?",
+o:[
+"Cerebrum",
+"Cerebellum",
+"Medulla",
+"Hypothalamus"
+],
+a:1,
+e:"The cerebellum coordinates muscular activity, posture and balance."
+},
+
+{
+chapter:"Control and Coordination",
+q:"A reflex action is generally rapid because:",
+o:[
+"it always involves conscious thinking first",
+"the response can be coordinated through a reflex arc",
+"it requires long-term memory",
+"the brain never receives information"
+],
+a:1,
+e:"Reflex arcs allow rapid coordination, often through the spinal cord."
+},
+
+{
+chapter:"Control and Coordination",
+q:"Which sequence correctly represents a simple reflex arc?",
+o:[
+"Receptor → sensory neuron → spinal cord → motor neuron → effector",
+"Effector → brain → receptor → sensory neuron",
+"Motor neuron → receptor → spinal cord → effector",
+"Receptor → effector → sensory neuron → brain"
+],
+a:0,
+e:"This is the standard pathway of a simple reflex response."
+},
+
+/* ================= REPRODUCTION ================= */
+
+{
+chapter:"How Do Organisms Reproduce?",
+q:"Why does sexual reproduction generally produce more variation than asexual reproduction?",
+o:[
+"It involves genetic material from two parents",
+"It always produces clones",
+"It prevents DNA copying",
+"It involves no cell division"
+],
+a:0,
+e:"Combination of genetic material from two parents produces greater variation."
+},
+
+{
+chapter:"How Do Organisms Reproduce?",
+q:"Fertilisation restores the diploid chromosome number because:",
+o:[
+"two haploid gametes fuse",
+"two diploid cells divide",
+"DNA disappears",
+"one chromosome is destroyed"
+],
+a:0,
+e:"Fusion of two haploid gametes restores the diploid state."
+},
+
+{
+chapter:"How Do Organisms Reproduce?",
+q:"After fertilisation in a flowering plant, the ovule develops into the:",
+o:[
+"fruit",
+"seed",
+"pollen grain",
+"stigma"
+],
+a:1,
+e:"The fertilised ovule develops into a seed."
+},
+
+{
+chapter:"How Do Organisms Reproduce?",
+q:"A contraceptive method that also provides protection against many sexually transmitted infections is:",
+o:[
+"Condom",
+"Oral pill",
+"Vasectomy",
+"Cu-T"
+],
+a:0,
+e:"Condoms act as a barrier and also reduce transmission of many STIs."
+},
+
+/* ================= HEREDITY ================= */
+
+{
+chapter:"Heredity",
+q:"A cross Tt × tt is performed, where T is dominant. What proportion of offspring is expected to show the recessive phenotype?",
+o:[
+"0%",
+"25%",
+"50%",
+"100%"
+],
+a:2,
+e:"The cross produces Tt, tt, Tt, tt, so half are expected to show the recessive phenotype."
+},
+
+{
+chapter:"Heredity",
+q:"A dominant trait appears in the F₁ generation of a monohybrid cross because:",
+o:[
+"the recessive allele is destroyed",
+"the dominant allele masks the recessive allele in a heterozygote",
+"both alleles disappear",
+"DNA cannot replicate"
+],
+a:1,
+e:"In a heterozygous individual, the dominant allele expresses the trait."
+},
+
+{
+chapter:"Heredity",
+q:"Which molecule carries hereditary information in most organisms?",
+o:[
+"Starch",
+"DNA",
+"Glucose",
+"Fat"
+],
+a:1,
+e:"DNA stores and transmits hereditary information."
+},
+
+{
+chapter:"Heredity",
+q:"A child receives one allele for a particular gene from:",
+o:[
+"only the father",
+"only the mother",
+"each biological parent",
+"neither parent"
+],
+a:2,
+e:"Offspring generally inherit one allele of each gene from each biological parent."
+},
+
+/* ================= LIGHT ================= */
+
+{
+chapter:"Light – Reflection and Refraction",
+q:"For a concave mirror, an object placed beyond the centre of curvature forms an image that is:",
+o:[
+"virtual, erect and enlarged",
+"real, inverted and diminished",
+"virtual, inverted and diminished",
+"real, erect and enlarged"
+],
+a:1,
+e:"For an object beyond C, the image forms between F and C and is real, inverted and diminished."
+},
+
+{
+chapter:"Light – Reflection and Refraction",
+q:"A concave mirror has focal length 15 cm. Its radius of curvature is:",
+o:[
+"7.5 cm",
+"15 cm",
+"30 cm",
+"45 cm"
+],
+a:2,
+e:"For a spherical mirror, R = 2f = 30 cm."
+},
+
+{
+chapter:"Light – Reflection and Refraction",
+q:"An object is placed exactly at the focus of a convex lens. The emergent rays are:",
+o:[
+"parallel",
+"converging immediately",
+"reflected back",
+"completely absorbed"
+],
+a:0,
+e:"Rays from an object at the principal focus emerge parallel to the principal axis."
+},
+
+{
+chapter:"Light – Reflection and Refraction",
+q:"Light enters glass from air. Which quantity remains unchanged?",
+o:[
+"Speed",
+"Frequency",
+"Wavelength",
+"Refractive index"
+],
+a:1,
+e:"Frequency is determined by the source and remains unchanged at the boundary."
+},
+
+{
+chapter:"Light – Reflection and Refraction",
+q:"A medium has refractive index 1.5. Taking speed of light in vacuum as 3 × 10⁸ m/s, its speed in the medium is:",
+o:[
+"4.5 × 10⁸ m/s",
+"3 × 10⁸ m/s",
+"2 × 10⁸ m/s",
+"1.5 × 10⁸ m/s"
+],
+a:2,
+e:"n = c/v, so v = c/n = 3×10⁸/1.5 = 2×10⁸ m/s."
+},
+
+{
+chapter:"Human Eye and Colourful World",
+q:"A person can see nearby objects clearly but cannot see distant objects clearly. The defect is:",
+o:[
+"Hypermetropia",
+"Myopia",
+"Presbyopia only",
+"Cataract"
+],
+a:1,
+e:"Myopia is difficulty in seeing distant objects clearly."
+},
+
+{
+chapter:"Human Eye and Colourful World",
+q:"Myopia is corrected using a:",
+o:[
+"Convex lens",
+"Concave lens",
+"Plane mirror",
+"Prism only"
+],
+a:1,
+e:"A concave lens diverges incoming rays so the eye can focus the image on the retina."
+},
+
+{
+chapter:"Human Eye and Colourful World",
+q:"The sky appears blue mainly because:",
+o:[
+"blue light has the longest wavelength",
+"shorter wavelengths are scattered more strongly",
+"red light is completely absent",
+"the atmosphere emits blue light"
+],
+a:1,
+e:"Shorter wavelengths such as blue scatter more strongly in the atmosphere."
+},
+
+/* ================= ELECTRICITY ================= */
+
+{
+chapter:"Electricity",
+q:"A 12 V battery is connected to a 6 Ω resistor. The current is:",
+o:[
+"0.5 A",
+"2 A",
+"6 A",
+"72 A"
+],
+a:1,
+e:"I = V/R = 12/6 = 2 A."
+},
+
+{
+chapter:"Electricity",
+q:"Two resistors of 6 Ω and 3 Ω are connected in parallel. Their equivalent resistance is:",
+o:[
+"9 Ω",
+"3 Ω",
+"2 Ω",
+"18 Ω"
+],
+a:2,
+e:"1/R = 1/6 + 1/3 = 1/2, so R = 2 Ω."
+},
+
+{
+chapter:"Electricity",
+q:"A 100 W appliance operates for 5 hours. The electrical energy consumed is:",
+o:[
+"0.05 kWh",
+"0.5 kWh",
+"5 kWh",
+"50 kWh"
+],
+a:1,
+e:"Energy = 100 W × 5 h = 500 Wh = 0.5 kWh."
+},
+
+{
+chapter:"Electricity",
+q:"If the length of a uniform wire is doubled while its material and area remain unchanged, its resistance becomes:",
+o:[
+"half",
+"double",
+"four times",
+"unchanged"
+],
+a:1,
+e:"R = ρL/A, so doubling L doubles R."
+},
+
+{
+chapter:"Electricity",
+q:"Two identical resistors are connected first in series and then in parallel. The ratio of series equivalent resistance to parallel equivalent resistance is:",
+o:[
+"1:2",
+"2:1",
+"4:1",
+"1:4"
+],
+a:2,
+e:"For each resistor R, series = 2R and parallel = R/2, giving a ratio of 4:1."
+},
+
+{
+chapter:"Electricity",
+q:"A fuse wire should have:",
+o:[
+"high melting point and low resistance",
+"low melting point and suitable relatively high resistance",
+"zero resistance",
+"very high melting point"
+],
+a:1,
+e:"A fuse must heat and melt when excessive current flows."
+},
+
+/* ================= MAGNETISM ================= */
+
+{
+chapter:"Magnetic Effects of Electric Current",
+q:"The magnetic field around a straight current-carrying conductor consists of:",
+o:[
+"parallel straight lines only",
+"concentric circles around the conductor",
+"random triangles",
+"ellipses centred on the battery"
+],
+a:1,
+e:"The magnetic field lines around a straight current-carrying conductor are concentric circles."
+},
+
+{
+chapter:"Magnetic Effects of Electric Current",
+q:"The direction of magnetic field around a straight current-carrying conductor can be found using:",
+o:[
+"Fleming's left-hand rule",
+"Right-hand thumb rule",
+"Snell's law",
+"Archimedes' principle"
+],
+a:1,
+e:"The right-hand thumb rule gives the direction of the circular magnetic field."
+},
+
+{
+chapter:"Magnetic Effects of Electric Current",
+q:"Fleming's left-hand rule gives the direction of:",
+o:[
+"force on a current-carrying conductor",
+"resistance of a resistor",
+"electric charge only",
+"refraction"
+],
+a:0,
+e:"Fleming's left-hand rule relates magnetic field, current and force on a conductor."
+},
+
+{
+chapter:"Magnetic Effects of Electric Current",
+q:"The split ring in a simple DC motor is used mainly to:",
+o:[
+"increase resistance",
+"reverse current direction in the coil after each half rotation",
+"stop magnetic field formation",
+"convert AC into heat"
+],
+a:1,
+e:"The split ring reverses current in the coil every half turn, keeping torque in the same rotational direction."
+},
+
+{
+chapter:"Magnetic Effects of Electric Current",
+q:"The magnetic field inside a long current-carrying solenoid is approximately:",
+o:[
+"zero everywhere",
+"uniform and strong",
+"random",
+"independent of current"
+],
+a:1,
+e:"A long solenoid produces a nearly uniform magnetic field inside it."
+},
+
+/* ================= ENVIRONMENT ================= */
+
+{
+chapter:"Our Environment",
+q:"If producers contain 10,000 J of energy, approximately how much energy may reach primary consumers according to the 10% law?",
+o:[
+"10 J",
+"100 J",
+"1000 J",
+"10,000 J"
+],
+a:2,
+e:"Approximately 10% of energy is transferred to the next trophic level: 1000 J."
+},
+
+{
+chapter:"Our Environment",
+q:"Which substance is most likely to undergo biomagnification?",
+o:[
+"A biodegradable vegetable waste",
+"A persistent non-biodegradable pesticide",
+"Water",
+"Oxygen"
+],
+a:1,
+e:"Persistent non-biodegradable chemicals can accumulate and become more concentrated at higher trophic levels."
+},
+
+{
+chapter:"Our Environment",
+q:"The ozone layer is important because it absorbs a significant portion of harmful:",
+o:[
+"infrared radiation",
+"ultraviolet radiation",
+"radio waves",
+"sound waves"
+],
+a:1,
+e:"Stratospheric ozone absorbs much of the Sun's harmful ultraviolet radiation."
+},
+
+{
+chapter:"Our Environment",
+q:"Which waste is most likely to be biodegradable?",
+o:[
+"Plastic bottle",
+"Aluminium can",
+"Vegetable peel",
+"Glass"
+],
+a:2,
+e:"Vegetable peels are organic matter that microorganisms can decompose."
+},
+
+{
+chapter:"Our Environment",
+q:"If a pesticide is non-biodegradable and enters a food chain, its concentration is generally greatest in:",
+o:[
+"producers",
+"primary consumers",
+"secondary consumers",
+"top consumers"
+],
+a:3,
+e:"Biomagnification causes concentration to increase at successive trophic levels."
+},
+
+/* ================= MIXED HOTS ================= */
+
+{
+chapter:"HOTS – Chemistry",
+q:"A student adds excess sodium hydroxide to an acidic solution until the pH changes from 2 to 7. Which statement best describes the process?",
+o:[
+"The solution becomes more acidic",
+"Hydrogen-ion concentration decreases greatly",
+"Hydrogen-ion concentration increases greatly",
+"The number of water molecules becomes zero"
+],
+a:1,
+e:"Increasing pH from 2 to 7 corresponds to a large decrease in hydrogen-ion concentration."
+},
+
+{
+chapter:"HOTS – Biology",
+q:"A leaf is partially covered with black paper and exposed to sunlight. After the starch test, only the illuminated region turns blue-black. This demonstrates that:",
+o:[
+"chlorophyll is unnecessary",
+"light is necessary for photosynthesis",
+"oxygen is necessary for photosynthesis",
+"roots perform photosynthesis"
+],
+a:1,
+e:"The illuminated region forms starch, showing that light is necessary for photosynthesis."
+},
+
+{
+chapter:"HOTS – Physics",
+q:"A ray travelling from glass to air strikes the boundary at an angle greater than the critical angle. What can occur?",
+o:[
+"Total internal reflection",
+"Only dispersion",
+"Absorption of all light",
+"Refraction into the normal only"
+],
+a:0,
+e:"When light travels from a denser to a rarer medium and the incidence angle exceeds the critical angle, total internal reflection occurs."
+},
+
+{
+chapter:"HOTS – Electricity",
+q:"Two bulbs rated 60 W and 100 W are connected in parallel to their rated voltage. Which bulb draws greater current?",
+o:[
+"60 W bulb",
+"100 W bulb",
+"Both draw equal current",
+"Neither draws current"
+],
+a:1,
+e:"At the same voltage, P = VI, so the 100 W bulb draws greater current."
+},
+
+{
+chapter:"HOTS – Physics",
+q:"The force on a current-carrying conductor in a magnetic field is maximum when the angle between current and magnetic field is:",
+o:[
+"0°",
+"30°",
+"60°",
+"90°"
+],
+a:3,
+e:"F = BIL sinθ, which is maximum when sinθ = 1, i.e. θ = 90°."
+},
+
+{
+chapter:"HOTS – Chemistry",
+q:"A student claims that every acid-base reaction produces a neutral solution. Which response is scientifically correct?",
+o:[
+"The claim is always true",
+"The final pH depends on the reactants and their amounts",
+"All acid-base reactions produce pH 7",
+"Neutralisation cannot change pH"
+],
+a:1,
+e:"Neutralisation does not guarantee pH 7; the final pH depends on the substances and quantities involved."
+},
+
+{
+chapter:"HOTS – Biology",
+q:"If a person's red blood cells contained much less haemoglobin than normal, which function would be most directly affected?",
+o:[
+"Transport of oxygen",
+"Digestion of starch",
+"Urine formation",
+"Production of bile"
+],
+a:0,
+e:"Haemoglobin binds oxygen and is essential for efficient oxygen transport."
+},
+
+{
+chapter:"HOTS – Physics",
+q:"An object is placed between F and 2F of a convex lens. The image formed is:",
+o:[
+"Virtual, erect and diminished",
+"Real, inverted and enlarged",
+"Real, erect and diminished",
+"Virtual and inverted"
+],
+a:1,
+e:"For an object between F and 2F, a convex lens forms a real, inverted and enlarged image beyond 2F."
+},
+
+{
+chapter:"HOTS – Biology",
+q:"A population has very little genetic variation. Which consequence is most likely if a new environmental change occurs?",
+o:[
+"The population is guaranteed to survive",
+"The population may have reduced ability to adapt",
+"All individuals immediately become identical",
+"Variation becomes impossible forever"
+],
+a:1,
+e:"Low genetic variation can reduce the range of traits available for adaptation."
+},
+
+{
+chapter:"HOTS – Chemistry",
+q:"Which observation most strongly supports the conclusion that a metal is more reactive than another metal?",
+o:[
+"It has a shiny surface",
+"It displaces the other metal from its salt solution",
+"It has a higher density",
+"It is harder"
+],
+a:1,
+e:"Displacement from a salt solution directly demonstrates greater chemical reactivity."
+},
+
+{
+chapter:"HOTS – Environment",
+q:"Why is energy flow through an ecosystem described as unidirectional?",
+o:[
+"Energy cycles indefinitely between trophic levels",
+"Energy enters mainly as sunlight and is progressively dissipated as heat",
+"Consumers create energy",
+"Decomposers return all energy to the Sun"
+],
+a:1,
+e:"Energy flows from the Sun through trophic levels and much is lost as heat at each transfer."
+},
+
+{
+chapter:"HOTS – Electricity",
+q:"A wire's resistance is R. If its length is doubled and its cross-sectional area is also doubled, its new resistance is:",
+o:[
+"R/4",
+"R/2",
+"R",
+"2R"
+],
+a:2,
+e:"R = ρL/A. Doubling both L and A leaves R unchanged."
+},
+
+{
+chapter:"HOTS – Heredity",
+q:"A heterozygous tall pea plant is crossed with a dwarf plant. If tallness is dominant, the expected phenotype ratio is:",
+o:[
+"3 tall : 1 dwarf",
+"1 tall : 1 dwarf",
+"1 tall : 3 dwarf",
+"All tall"
+],
+a:1,
+e:"Tt × tt gives 50% Tt tall and 50% tt dwarf."
+},
+
+{
+chapter:"HOTS – Light",
+q:"A student moves an object farther from a concave mirror while keeping it beyond C. What happens to the image?",
+o:[
+"It remains real, inverted and diminished",
+"It becomes virtual and erect",
+"It necessarily becomes larger than the object",
+"It disappears"
+],
+a:0,
+e:"For an object beyond C, the concave mirror continues to form a real, inverted, diminished image."
+},
+
+{
+chapter:"HOTS – Life Processes",
+q:"If the small intestine had a greatly reduced surface area, which process would be most directly affected?",
+o:[
+"Absorption of digested nutrients",
+"Breathing",
+"Pumping of blood",
+"Formation of reflexes"
+],
+a:0,
+e:"The small intestine's large surface area facilitates efficient absorption of digested nutrients."
+},
+
+{
+chapter:"HOTS – Magnetism",
+q:"If the current through a solenoid is increased while other factors remain the same, the magnetic field inside it generally:",
+o:[
+"decreases",
+"increases",
+"becomes zero",
+"changes into an electric field only"
+],
+a:1,
+e:"The magnetic field strength of a solenoid increases with current."
+},
+
+{
+chapter:"HOTS – Reproduction",
+q:"Asexual reproduction usually produces offspring genetically very similar to the parent because:",
+o:[
+"only one parent contributes genetic material",
+"two unrelated gametes fuse",
+"meiosis always occurs",
+"fertilisation occurs twice"
+],
+a:0,
+e:"Asexual reproduction involves a single parent and generally produces genetically similar offspring."
+},
+
+{
+chapter:"HOTS – Acids, Bases and Salts",
+q:"A solution has pH 11. Which statement is correct?",
+o:[
+"It is acidic",
+"It is basic",
+"It is necessarily a strong acid",
+"It contains no ions"
+],
+a:1,
+e:"A pH greater than 7 indicates a basic solution."
+},
+
+{
+chapter:"HOTS – Carbon",
+q:"Which property explains why carbon can form long chains and branched structures?",
+o:[
+"Catenation",
+"High density",
+"Metallic bonding",
+"Ionic character"
+],
+a:0,
+e:"Catenation is carbon's ability to bond with other carbon atoms to form chains and branches."
+},
+
+{
+chapter:"HOTS – Environment",
+q:"Which change would most directly reduce the energy available to organisms at the next trophic level?",
+o:[
+"Increasing energy loss as heat during metabolism",
+"Increasing sunlight reaching producers",
+"Increasing producer biomass",
+"Reducing respiration"
+],
+a:0,
+e:"Energy lost as heat is unavailable for transfer to the next trophic level."
+},
+
+{
+chapter:"HOTS – Control and Coordination",
+q:"Damage to the cerebellum would most directly affect:",
+o:[
+"balance and coordination",
+"production of bile",
+"filtration of blood",
+"formation of red blood cells"
+],
+a:0,
+e:"The cerebellum coordinates movement, posture and balance."
+},
+
+{
+chapter:"HOTS – Chemical Reactions",
+q:"A reaction in which a single compound breaks into two or more simpler substances is classified as:",
+o:[
+"Combination",
+"Decomposition",
+"Displacement",
+"Neutralisation"
+],
+a:1,
+e:"A decomposition reaction breaks one compound into simpler substances."
+},
+
+{
+chapter:"HOTS – Electricity",
+q:"If the potential difference across a resistor is doubled while resistance remains constant, current becomes:",
+o:[
+"half",
+"double",
+"four times",
+"unchanged"
+],
+a:1,
+e:"Ohm's law gives I = V/R, so doubling V doubles I when R is constant."
+},
+
+{
+chapter:"HOTS – Human Eye",
+q:"The ability of the eye lens to adjust its focal length for viewing objects at different distances is called:",
+o:[
+"Dispersion",
+"Accommodation",
+"Scattering",
+"Reflection"
+],
+a:1,
+e:"Accommodation is the adjustment of the eye lens to focus objects at different distances."
+},
+
+{
+chapter:"HOTS – Metals",
+q:"A metal reacts vigorously with water and is stored under kerosene. Which metal is most consistent with this behaviour?",
+o:[
+"Sodium",
+"Copper",
+"Silver",
+"Gold"
+],
+a:0,
+e:"Sodium reacts vigorously with water and is stored under kerosene."
+},
+
+{
+chapter:"HOTS – Reproduction",
+q:"Which event directly produces genetic variation during sexual reproduction?",
+o:[
+"Fusion of gametes carrying genetic material from two parents",
+"Simple binary fission",
+"Growth by mitosis only",
+"Repair of a damaged cell"
+],
+a:0,
+e:"Sexual reproduction combines genetic material from two parents."
+},
+
+{
+chapter:"HOTS – Refraction",
+q:"When light passes from air into glass, it generally bends:",
+o:[
+"away from the normal",
+"towards the normal",
+"along the surface",
+"without changing direction in every case"
+],
+a:1,
+e:"Light entering a denser medium from air generally bends towards the normal."
+},
+
+{
+chapter:"HOTS – Biology",
+q:"Which blood vessel carries oxygenated blood from the lungs to the heart?",
+o:[
+"Pulmonary artery",
+"Pulmonary vein",
+"Vena cava",
+"Renal artery"
+],
+a:1,
+e:"The pulmonary vein carries oxygenated blood from the lungs to the left atrium."
+},
+
+{
+chapter:"HOTS – Environment",
+q:"Removing a top predator from a food web can affect several other populations because:",
+o:[
+"food webs contain interconnected feeding relationships",
+"predators never affect prey populations",
+"energy stops entering the ecosystem",
+"plants immediately become consumers"
+],
+a:0,
+e:"Changes in one population can propagate through interconnected food-web relationships."
+},
+
+{
+chapter:"HOTS – Magnetic Effects",
+q:"A current-carrying conductor experiences a force in a magnetic field only when the conductor has a component:",
+o:[
+"parallel to the field only",
+"perpendicular to the field",
+"with zero current",
+"outside the magnetic field"
+],
+a:1,
+e:"The force depends on F = BIL sinθ and is maximum for the perpendicular component."
+}
+
+];
+
+
+/* ============================================================
+   UTILITY FUNCTIONS
+   ============================================================ */
+
+function shuffle(array) {
+
+    const arr = [...array];
+
+    for (let i = arr.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+
+    return arr;
+}
+
+
+/* ============================================================
+   CREATE A NEW 60-QUESTION SET
+   GUARANTEES CHANGE FROM PREVIOUS SET
+   ============================================================ */
+
+function generateQuizSet() {
+
+    const TOTAL = 60;
+
+    let previous =
+        JSON.parse(localStorage.getItem("boardblazePreviousSet") || "[]");
+
+    let selected;
+
+    // Try many random combinations
+    for (let attempt = 0; attempt < 100; attempt++) {
+
+        selected = shuffle(questionBank).slice(0, TOTAL);
+
+        const newIDs = selected.map(q => questionBank.indexOf(q));
+
+        const same =
+            previous.length === TOTAL &&
+            previous.every(id => newIDs.includes(id)) &&
+            newIDs.every(id => previous.includes(id));
+
+        if (!same) {
+            break;
+        }
+    }
+
+    /*
+       Extra guarantee:
+       If the random selection somehow produced exactly the
+       same 60-question set, force one question to change.
+    */
+
+    const selectedIDs = selected.map(q => questionBank.indexOf(q));
+
+    if (
+        previous.length === TOTAL &&
+        previous.every(id => selectedIDs.includes(id)) &&
+        selectedIDs.every(id => previous.includes(id))
+    ) {
+
+        const previousSet = new Set(previous);
+
+        const replacementIndex = questionBank.findIndex(
+            (_, index) => !previousSet.has(index)
+        );
+
+        if (replacementIndex !== -1) {
+
+            selected.pop();
+
+            selected.push(questionBank[replacementIndex]);
+        }
+    }
+
+    const finalIDs = selected.map(q => questionBank.indexOf(q));
+
+    localStorage.setItem(
+        "boardblazePreviousSet",
+        JSON.stringify(finalIDs)
+    );
+
+    return shuffle(selected);
+}
+
+
+/* ============================================================
+   QUIZ VARIABLES
+   ============================================================ */
+
+let quiz = [];
+let current = 0;
+let score = 0;
+let answered = false;
+
+
+/* ============================================================
+   START QUIZ
+   ============================================================ */
+
+function startQuiz() {
+
+    quiz = generateQuizSet();
+
+    current = 0;
+    score = 0;
+    answered = false;
+
+    document.getElementById("home").classList.add("hidden");
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("quizScreen").classList.remove("hidden");
+
+    showQuestion();
+}
+
+
+/* ============================================================
+   SHOW QUESTION
+   ============================================================ */
+
+function showQuestion() {
+
+    answered = false;
+
+    const q = quiz[current];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${current + 1} / 60`;
+
+    document.getElementById("scoreDisplay").textContent =
+        `Score: ${score}`;
+
+    document.getElementById("progressBar").style.width =
+        `${((current + 1) / 60) * 100}%`;
+
+    document.getElementById("chapter").textContent =
+        q.chapter;
+
+    document.getElementById("question").textContent =
+        q.q;
+
+    const optionsDiv = document.getElementById("options");
+
+    optionsDiv.innerHTML = "";
+
+    document.getElementById("feedback").style.display = "none";
+
+    document.getElementById("nextBtn").style.display = "none";
+
+    /*
+       IMPORTANT:
+       Options are also shuffled every time.
+       We keep the correct answer attached to its text.
+    */
+
+    let optionObjects = q.o.map((text, index) => ({
+        text: text,
+        correct: index === q.a
+    }));
+
+    optionObjects = shuffle(optionObjects);
+
+    optionObjects.forEach((option, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "option";
+
+        button.textContent =
+            `${String.fromCharCode(65 + index)}. ${option.text}`;
+
+        button.onclick = () => selectAnswer(button, option.correct);
+
+        optionsDiv.appendChild(button);
+    });
+}
+
+
+/* ============================================================
+   ANSWER
+   ============================================================ */
+
+function selectAnswer(button, isCorrect) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const allButtons =
+        document.querySelectorAll(".option");
+
+    allButtons.forEach(btn => {
+        btn.classList.add("disabled");
+    });
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.style.display = "block";
+
+    if (isCorrect) {
+
+        score++;
+
+        button.classList.add("correct");
+
+        feedback.innerHTML =
+            "✅ <b>Correct!</b><br><br>" +
+            quiz[current].e;
+
+    } else {
+
+        button.classList.add("wrong");
+
+        feedback.innerHTML =
+            "❌ <b>Not quite.</b><br><br>" +
+            quiz[current].e;
+
+        // Highlight correct option
+        allButtons.forEach(btn => {
+
+            const text = btn.textContent.substring(3);
+
+            if (text === quiz[current].o[quiz[current].a]) {
+
+                btn.classList.add("correct");
+            }
+        });
+    }
+
+    document.getElementById("scoreDisplay").textContent =
+        `Score: ${score}`;
+
+    document.getElementById("nextBtn").style.display =
+        "block";
+}
+
+
+/* ============================================================
+   NEXT QUESTION
+   ============================================================ */
+
+function nextQuestion() {
+
+    current++;
+
+    if (current >= quiz.length) {
+
+        finishQuiz();
+
+    } else {
+
+        showQuestion();
+    }
+}
+
+
+/* ============================================================
+   FINISH
+   ============================================================ */
+
+function finishQuiz() {
+
+    document.getElementById("quizScreen").classList.add("hidden");
+
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    const percentage =
+        Math.round((score / 60) * 100);
+
+    document.getElementById("finalScore").textContent =
+        `${score} / 60`;
+
+    let message = "";
+
+    if (percentage >= 90) {
+
+        message =
+            "🔥 Outstanding! You are operating at an elite board-preparation level.";
+
+    } else if (percentage >= 75) {
+
+        message =
+            "💪 Excellent! Your concepts are strong, but keep attacking the difficult questions.";
+
+    } else if (percentage >= 60) {
+
+        message =
+            "📚 Good attempt. Focus on application-based questions and weak chapters.";
+
+    } else if (percentage >= 40) {
+
+        message =
+            "⚡ Keep practising. Build your concepts before attempting extreme-level MCQs.";
+
+    } else {
+
+        message =
+            "🚀 Don't worry. Use the explanations, revise your NCERT concepts and try again.";
+    }
+
+    document.getElementById("resultMessage").textContent =
+        message;
+
+    document.getElementById("resultDetails").innerHTML =
+        `<b>Percentage:</b> ${percentage}%<br><br>
+         <b>Questions attempted:</b> 60<br>
+         <b>New questions:</b> Your next attempt will use a different 60-question set.`;
+}
+
+</script>
+
+</body>
+</html>
